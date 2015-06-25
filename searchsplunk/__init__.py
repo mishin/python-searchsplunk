@@ -1,2 +1,2 @@
 __all__ = ['searchsplunk']
-from .searchsplunk import SearchSplunk
+from .search import SearchSplunk
