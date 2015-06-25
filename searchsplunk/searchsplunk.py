@@ -1,7 +1,9 @@
 import requests
 import re
-from xml.dom import minidom
 import warnings
+from xml.dom import minidom
+from . import exceptions
+
 
 warnings.filterwarnings('ignore')
 
@@ -25,12 +27,11 @@ class Splunk(object):
         method='POST'
 
         r = self.request(method, uri, body={'username': self.username, 'password': self.password})
-        print r.status_code, r.text
         try:
             self.session_key = minidom.parseString(r.text).getElementsByTagName('sessionKey')[0].childNodes[0].nodeValue
         except IndexError:
-            raise SplunkInvalidCredentials(r.text)
-        return
+            raise exceptions.SplunkInvalidCredentials(r.text)
+        return True
 
     @property
     def headers(self):
@@ -78,7 +79,7 @@ class SearchSplunk(Splunk):
             if self._search_status():
                 search_done = True
                 self._search_results()
-        return self.search_results
+        return True
 
     def _start_search(self):
         uri = '/services/search/jobs' 
@@ -88,9 +89,8 @@ class SearchSplunk(Splunk):
             self.search_query = '{0} {1}'.format('search ', self.search_query)
 
         s = self.request(method, uri, body={'search': self.search_query})
-        print s.text
         self.sid = minidom.parseString(s.text).getElementsByTagName('sid')[0].childNodes[0].nodeValue
-        return
+        return True
 
     def _search_status(self):
         uri = '/services/search/jobs/{0}/'.format(self.sid)
@@ -106,12 +106,4 @@ class SearchSplunk(Splunk):
         s = self.request(method, uri, params={'output_mode': output_mode})
         self.s = s
         self.search_results = s.json()
-        return
-
-
-class SplunkError(Exception):
-    pass
-
-
-class SplunkInvalidCredentials(SplunkError):
-    pass
+        return True
