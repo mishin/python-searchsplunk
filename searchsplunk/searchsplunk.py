@@ -68,7 +68,8 @@ class SearchSplunk(Splunk):
     def search(self, search_query):
         """
         Create searches in Splunk and get the response.
-        Returns a Python object
+        Returns True or raises exception
+        Search result accessible through SearchSplunk.search_results
         """
         self.search_query = search_query
 
