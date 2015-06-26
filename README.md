@@ -13,7 +13,7 @@ Easily create Splunk searches from Python and get the result as a Python object.
 >>> s = SearchSplunk('https://splunk.acme.com:8089', 'MYUSER', 'MYPASS', ssl_verify=False)
 >>> s.login()
 >>> s.search('sourcetype=salt:grains openstack_uid=e0303456c-d5a3-789f-ab68-8f27561ffa0f | dedup openstack_uid')
->>> pp.pprint(d)
+>>> pp.pprint(s.search_results)
 { u'fields': [ { u'name': u'_bkt'},
                { u'name': u'_cd'},
                { u'name': u'_indextime'},
